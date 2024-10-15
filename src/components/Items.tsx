@@ -1,5 +1,9 @@
 import {
+    Box,
+    Button,
+    IconButton,
     InputAdornment,
+    Paper,
     Table,
     TableBody,
     TableCell,
@@ -9,8 +13,8 @@ import {
     TableRow,
     TextField,
 } from '@mui/material'
-import { Delete, Search } from '@mui/icons-material'
-import { Link } from 'react-router-dom'
+import { Add, Delete, Search } from '@mui/icons-material'
+import { Link, useNavigate } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 
 const Items = () => {
@@ -37,6 +41,8 @@ const Items = () => {
     const [page, setPage] = useState(0)
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [paginated, setPaginated] = useState([])
+
+    const navigate = useNavigate()
 
     const handleFilter = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -71,20 +77,30 @@ const Items = () => {
     return (
         <div>
             <h2>Items</h2>
-            <TextField
-                label="filter"
-                value={filter}
-                onChange={handleFilter}
-                slotProps={{
-                    input: {
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <Search />
-                            </InputAdornment>
-                        ),
-                    },
-                }}
-            />
+            <Box display="flex" alignItems="center" justifyContent="end">
+                <TextField
+                    label="filter"
+                    value={filter}
+                    onChange={handleFilter}
+                    slotProps={{
+                        input: {
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <Search />
+                                </InputAdornment>
+                            ),
+                        },
+                    }}
+                />
+                <Box marginLeft="12px">
+                    <IconButton
+                        aria-label="add"
+                        onClick={() => navigate('/newItem')}
+                    >
+                        <Add />
+                    </IconButton>
+                </Box>
+            </Box>
             <Table>
                 <TableHead>
                     <TableRow>
