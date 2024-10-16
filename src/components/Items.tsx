@@ -3,6 +3,7 @@ import {
     Button,
     IconButton,
     InputAdornment,
+    Modal,
     Paper,
     Table,
     TableBody,
@@ -16,6 +17,10 @@ import {
 import { Add, Delete, Search } from '@mui/icons-material'
 import { Link, useNavigate } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+import backend from '../utils/backend'
+import ItemType from '../assets/ItemType'
+import ErrorType from '../assets/ErrorType'
 
 const Items = () => {
     const rows = [
@@ -35,14 +40,31 @@ const Items = () => {
         { itemId: '14', itemName: 'ThinkPad' },
     ]
 
+    const [allItems, setAllItems] = useState<ItemType[]>([])
+    const [error, setError] = useState<ErrorType>()
+
     const [filter, setFilter] = useState('')
-    const [items, setItems] = useState(rows)
+    const [items, setItems] = useState<ItemType[]>([])
 
     const [page, setPage] = useState(0)
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [paginated, setPaginated] = useState([])
 
+    const [open, setOpen] = useState(false)
+    const [selectedItemId, setSelectedItemId] = useState<number | undefined>()
+
     const navigate = useNavigate()
+
+    useEffect(() => {
+        axios
+            .get(`${backend}/items`)
+            .then((res) => {
+                console.log(res.data)
+                setAllItems(res.data)
+                setItems(res.data)
+            })
+            .catch((e) => console.error(e.message))
+    }, [])
 
     const handleFilter = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -51,9 +73,9 @@ const Items = () => {
 
         setFilter(f)
         setItems(
-            rows.filter(
+            allItems.filter(
                 (item) =>
-                    item.itemId.toLowerCase().includes(f.toLowerCase()) ||
+                    String(item.itemId).includes(f.toLowerCase()) ||
                     item.itemName.toLowerCase().includes(f.toLowerCase())
             )
         )
@@ -74,8 +96,60 @@ const Items = () => {
         setPage(0)
     }
 
+    const handleOpenModal = (itemId: number) => {
+        setSelectedItemId(itemId)
+        setOpen(!open)
+    }
+    const handleCloseModal = () => {
+        setSelectedItemId(undefined)
+        setOpen(!open)
+    }
+
+    const handleDelete = (
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+        itemId: number | undefined
+    ) => {
+        e.preventDefault()
+        if (itemId) {
+            axios
+                .delete(`${backend}/items/${itemId}`)
+                .then(() => {
+                    setAllItems(
+                        allItems.filter((item) => item.itemId !== itemId)
+                    )
+                    setItems(items.filter((item) => item.itemId !== itemId))
+                    handleCloseModal()
+                })
+                .catch((e) => {
+                    console.error(`${e.status}: ${e.message}`)
+                    setError(e)
+                })
+        }
+    }
+
     return (
         <div>
+            <Modal open={open} onClose={handleCloseModal}>
+                <div className="modal">
+                    <h4>Are you sure?</h4>
+                    <div className="modal-buttons">
+                        <Button
+                            variant="outlined"
+                            color="success"
+                            onClick={(e) => handleDelete(e, selectedItemId)}
+                        >
+                            Yes, delete
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={handleCloseModal}
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
             <h2>Items</h2>
             <Box display="flex" alignItems="center" justifyContent="end">
                 <TextField
@@ -131,7 +205,17 @@ const Items = () => {
                                 </Link>
                             </TableCell>
                             <TableCell align="center">
-                                <Delete />
+                                <IconButton
+                                    aria-label="delete"
+                                    onClick={() => {
+                                        handleOpenModal(item.itemId)
+                                    }}
+                                    // onClick={(e) =>
+                                    //     handleDelete(e, item.itemId)
+                                    // }
+                                >
+                                    <Delete />
+                                </IconButton>
                             </TableCell>
                         </TableRow>
                     ))}

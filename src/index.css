@@ -6,3 +6,21 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
+.modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: white;
+    /* border: 2px solid #000; */
+    box-shadow: 24px;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+}
