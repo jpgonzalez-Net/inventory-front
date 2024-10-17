@@ -21,6 +21,7 @@ import axios from 'axios'
 import backend from '../utils/backend'
 import ItemType from '../assets/ItemType'
 import ErrorType from '../assets/ErrorType'
+import Error from './Error'
 
 const Items = () => {
     const rows = [
@@ -56,6 +57,10 @@ const Items = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
+        handleFetch()
+    }, [])
+
+    const handleFetch = () => {
         axios
             .get(`${backend}/items`)
             .then((res) => {
@@ -63,8 +68,14 @@ const Items = () => {
                 setAllItems(res.data)
                 setItems(res.data)
             })
-            .catch((e) => console.error(e.message))
-    }, [])
+            .catch((e) => {
+                console.error(e.message)
+                setError({
+                    status: e.status,
+                    message: e.response.data.message ?? 'Internal server error',
+                })
+            })
+    }
 
     const handleFilter = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -92,7 +103,7 @@ const Items = () => {
     const handleRowsPerPage = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
-        setRowsPerPage(parseInt(e.target.value, 5))
+        setRowsPerPage(parseInt(e.target.value, 10))
         setPage(0)
     }
 
@@ -121,8 +132,14 @@ const Items = () => {
                     handleCloseModal()
                 })
                 .catch((e) => {
-                    console.error(`${e.status}: ${e.message}`)
-                    setError(e)
+                    console.error(`${e.status}: ${e.response.data.message}`)
+                    setError({
+                        status: e.status,
+                        message:
+                            e.response.data.message ?? 'Internal server error',
+                    })
+                    handleCloseModal()
+                    handleFetch()
                 })
         }
     }
@@ -151,6 +168,7 @@ const Items = () => {
                 </div>
             </Modal>
             <h2>Items</h2>
+            {error && <Error error={error} />}
             <Box display="flex" alignItems="center" justifyContent="end">
                 <TextField
                     label="filter"
@@ -226,9 +244,9 @@ const Items = () => {
                 component="div"
                 count={items.length}
                 page={page}
-                onPageChange={handlePageChange}
-                rowsPerPageOptions={[5, 10, 15]}
+                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                 rowsPerPage={rowsPerPage}
+                onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPage}
             />
         </div>

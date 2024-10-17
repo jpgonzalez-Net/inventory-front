@@ -24,3 +24,18 @@ body {
     display: flex;
     justify-content: space-between;
 }
+
+.item {
+    margin: 24px 0;
+}
+
+.item-title {
+    margin-top: 6px;
+}
+
+a {
+    color: black;
+    font-style: italic;
+    font-weight: bolder;
+    text-decoration: none;
+}

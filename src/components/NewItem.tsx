@@ -5,6 +5,7 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    Stack,
     TextField,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
@@ -15,6 +16,8 @@ import backend from '../utils/backend'
 import ErrorType from '../assets/ErrorType'
 import ItemType from '../assets/ItemType'
 import randomNumber from '../utils/randomNumber'
+import Back from './Back'
+import Error from './Error'
 
 const NewItem = () => {
     const [itemName, setItemName] = useState('')
@@ -24,13 +27,17 @@ const NewItem = () => {
     const [locations, setLocations] = useState<LocationType[]>([])
     const [error, setError] = useState<ErrorType>()
 
+    const [nameError, setNameError] = useState(false)
+
     const navigate = useNavigate()
 
     useEffect(() => {
         axios
             .get(`${backend}/locations`)
             .then((res) => setLocations(res.data))
-            .catch((e) => setError({ status: e.status, message: e.message }))
+            .catch((e) =>
+                setError({ status: e.status, message: e.response.data.message })
+            )
     }, [])
 
     const handleSubmit = () => {
@@ -42,60 +49,91 @@ const NewItem = () => {
         const itemId: number = randomNumber()
         // console.log(itemId)
 
-        const locationObject: LocationType | null =
-            locationId === -1
-                ? null
-                : { locationId, state: '', address: null, phoneNumber: null }
-        const itemObject: ItemType = {
-            itemId,
-            itemName,
-            description,
-            location: locationObject,
-        }
+        if (itemName === '') {
+            setError({
+                status: 400,
+                message: 'Item Name is required',
+            })
+            setNameError(true)
+        } else {
+            const locationObject: LocationType | null =
+                locationId === -1
+                    ? null
+                    : {
+                          locationId,
+                          state: '',
+                          address: null,
+                          phoneNumber: null,
+                      }
+            const itemObject: ItemType = {
+                itemId,
+                itemName,
+                description,
+                location: locationObject,
+            }
 
-        axios
-            .post(`${backend}/items`, itemObject)
-            .then(() => navigate('/items'))
-            .catch((e) => setError(e))
+            axios
+                .post(`${backend}/items`, itemObject)
+                .then(() => navigate('/items'))
+                .catch((e) =>
+                    setError({
+                        status: e.status,
+                        message:
+                            e.response.data.message ?? 'Internal server error',
+                    })
+                )
+        }
     }
 
     // const locations = [{ locationId: '1', state: 'TX', address: 'Address 1' }]
 
     return (
         <div>
-            <Link to="/items">Back</Link>
+            <Back />
+            {error && <Error error={error} />}
             <h2>New Item</h2>
-            <FormControl>
+            <Stack spacing={2}>
                 <TextField
-                    label="Item Name"
+                    label="Item Name*"
                     value={itemName}
                     onChange={(e) => setItemName(e.target.value)}
+                    error={nameError}
+                    helperText={nameError ? 'Required field' : ''}
                 />
                 <TextField
                     label="Item Description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                    multiline
+                    maxRows={3}
                 />
-                <InputLabel id="newitem-address-select-label">
-                    Location
-                </InputLabel>
-                <Select
-                    labelId="newitem-address-select-label"
-                    label="Location"
-                    value={locationId}
-                    onChange={(e) => setLocationId(e.target.value as number)}
-                >
-                    <MenuItem value={-1}>
-                        <i>None</i>
-                    </MenuItem>
-                    {locations.map((loc) => (
-                        <MenuItem key={loc.locationId} value={loc.locationId}>
-                            {loc.address}
+                <FormControl>
+                    <InputLabel id="newitem-address-select-label">
+                        Location
+                    </InputLabel>
+                    <Select
+                        labelId="newitem-address-select-label"
+                        label="Location"
+                        value={locationId}
+                        onChange={(e) =>
+                            setLocationId(e.target.value as number)
+                        }
+                    >
+                        <MenuItem value={-1}>
+                            <i>None</i>
                         </MenuItem>
-                    ))}
-                </Select>
+                        {locations.map((loc) => (
+                            <MenuItem
+                                key={loc.locationId}
+                                value={loc.locationId}
+                            >
+                                {loc.address}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
                 <Button onClick={handleSubmit}>Submit</Button>
-            </FormControl>
+            </Stack>
         </div>
     )
 }
