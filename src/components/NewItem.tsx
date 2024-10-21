@@ -1,7 +1,6 @@
 import {
     Button,
     FormControl,
-    FormLabel,
     InputLabel,
     MenuItem,
     Select,
@@ -9,7 +8,7 @@ import {
     TextField,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import LocationType from '../assets/LocationType'
 import axios from 'axios'
 import backend from '../utils/backend'

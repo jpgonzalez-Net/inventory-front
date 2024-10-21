@@ -1,10 +1,10 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import backend from '../utils/backend'
 import ItemType from '../assets/ItemType'
 import ErrorType from '../assets/ErrorType'
-import { Alert, Box, Button, Chip, Divider, Modal } from '@mui/material'
+import { Box, Button, Chip, Divider, Modal } from '@mui/material'
 import Back from './Back'
 import Error from './Error'
 import { Delete } from '@mui/icons-material'
@@ -32,7 +32,7 @@ const Item = () => {
                     message: e.response.data.message ?? 'Internal server error',
                 })
             })
-    }, [])
+    }, [id])
 
     const handleOpenModal = () => {
         setOpen(!open)

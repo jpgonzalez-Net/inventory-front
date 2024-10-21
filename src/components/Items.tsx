@@ -4,11 +4,9 @@ import {
     IconButton,
     InputAdornment,
     Modal,
-    Paper,
     Table,
     TableBody,
     TableCell,
-    TableFooter,
     TableHead,
     TablePagination,
     TableRow,
@@ -24,23 +22,6 @@ import ErrorType from '../assets/ErrorType'
 import Error from './Error'
 
 const Items = () => {
-    const rows = [
-        { itemId: '1', itemName: 'basketball' },
-        { itemId: '2', itemName: 'baseball' },
-        { itemId: '3', itemName: 'NVIDIA' },
-        { itemId: '4', itemName: 'Old-School Essentials' },
-        { itemId: '5', itemName: 'LAMY Safari' },
-        { itemId: '6', itemName: 'Montblanc' },
-        { itemId: '7', itemName: '8BitDo' },
-        { itemId: '8', itemName: 'Dune' },
-        { itemId: '9', itemName: 'Dune Messiah' },
-        { itemId: '10', itemName: 'Abbey Road' },
-        { itemId: '11', itemName: 'IT' },
-        { itemId: '12', itemName: "A Hard Day's Night" },
-        { itemId: '13', itemName: 'Nintendo 3DS' },
-        { itemId: '14', itemName: 'ThinkPad' },
-    ]
-
     const [allItems, setAllItems] = useState<ItemType[]>([])
     const [error, setError] = useState<ErrorType>()
 
@@ -49,7 +30,6 @@ const Items = () => {
 
     const [page, setPage] = useState(0)
     const [rowsPerPage, setRowsPerPage] = useState(5)
-    const [paginated, setPaginated] = useState([])
 
     const [open, setOpen] = useState(false)
     const [selectedItemId, setSelectedItemId] = useState<number | undefined>()
@@ -167,7 +147,6 @@ const Items = () => {
                     </div>
                 </div>
             </Modal>
-            <h2>Items</h2>
             {error && <Error error={error} />}
             <Box display="flex" alignItems="center" justifyContent="end">
                 <TextField

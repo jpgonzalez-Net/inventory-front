@@ -1,6 +1,6 @@
 import { Container } from '@mui/material'
 import Items from './components/Items'
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import Item from './components/Item'
 import NewItem from './components/NewItem'
 import Populate from './components/Populate'
@@ -9,7 +9,7 @@ const App = () => {
     return (
         <div className="App">
             <Container fixed>
-                <h1>App</h1>
+                <h1>Items</h1>
                 <Routes>
                     <Route
                         path="/"

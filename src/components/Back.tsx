@@ -1,6 +1,6 @@
 import { ArrowBack } from '@mui/icons-material'
 import { Chip } from '@mui/material'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const Back = () => {
     const navigate = useNavigate()
