@@ -3,6 +3,7 @@ import {
     FormControl,
     InputLabel,
     MenuItem,
+    Modal,
     Select,
     Stack,
     TextField,
@@ -14,11 +15,11 @@ import axios from 'axios'
 import backend from '../utils/backend'
 import ErrorType from '../assets/ErrorType'
 import ItemType from '../assets/ItemType'
-import randomNumber from '../utils/randomNumber'
 import Back from './Back'
 import Error from './Error'
 
 const NewItem = () => {
+    const [itemId, setItemId] = useState<number | undefined>()
     const [itemName, setItemName] = useState('')
     const [description, setDescription] = useState('')
     const [locationId, setLocationId] = useState<number>(-1)
@@ -27,6 +28,9 @@ const NewItem = () => {
     const [error, setError] = useState<ErrorType>()
 
     const [nameError, setNameError] = useState(false)
+    const [idError, setIdError] = useState(false)
+
+    const [open, setOpen] = useState(false)
 
     const navigate = useNavigate()
 
@@ -40,21 +44,23 @@ const NewItem = () => {
     }, [])
 
     const handleSubmit = () => {
-        console.log('submitting...')
-        console.log(
-            `itemName: "${itemName}"; description: "${description}"; location: "${locationId}"`
-        )
+        // const itemId: number = randomNumber()
 
-        const itemId: number = randomNumber()
-        // console.log(itemId)
-
+        if (!itemId || itemId <= 0) {
+            setError({
+                status: 400,
+                message: 'Item ID is required',
+            })
+            setIdError(true)
+        }
         if (itemName === '') {
             setError({
                 status: 400,
                 message: 'Item Name is required',
             })
             setNameError(true)
-        } else {
+        }
+        if (itemName !== '' && itemId) {
             const locationObject: LocationType | null =
                 locationId === -1
                     ? null
@@ -73,7 +79,7 @@ const NewItem = () => {
 
             axios
                 .post(`${backend}/items`, itemObject)
-                .then(() => navigate('/items'))
+                .then(() => handleOpenModal())
                 .catch((e) =>
                     setError({
                         status: e.status,
@@ -81,17 +87,71 @@ const NewItem = () => {
                             e.response.data.message ?? 'Internal server error',
                     })
                 )
+        } else {
+            setError({
+                status: 400,
+                message: 'Item ID and Name are required',
+            })
         }
     }
 
-    // const locations = [{ locationId: '1', state: 'TX', address: 'Address 1' }]
+    const handleCloseModal = () => {
+        setOpen(!open)
+    }
+
+    const handleOpenModal = () => {
+        setOpen(!open)
+    }
+
+    const handleAnotherItem = () => {
+        setError(undefined)
+        setNameError(false)
+        setIdError(false)
+        setItemId(undefined)
+        setItemName('')
+        setDescription('')
+        setLocationId(-1)
+        handleCloseModal()
+    }
 
     return (
         <div>
+            <Modal open={open} onClose={handleCloseModal}>
+                <div className="modal">
+                    <h4>Item was added successfuly!</h4>
+                    <h3>Do you want to add another item or return home?</h3>
+                    <div className="modal-buttons">
+                        <Button
+                            variant="outlined"
+                            color="success"
+                            onClick={handleAnotherItem}
+                        >
+                            Add another item
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => navigate('/items')}
+                        >
+                            Return home
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
             <Back />
             {error && <Error error={error} />}
             <h2>New Item</h2>
             <Stack spacing={2}>
+                <TextField
+                    label="Item ID*"
+                    type="number"
+                    value={itemId || ''}
+                    onChange={(e) => setItemId(parseInt(e.target.value, 10))}
+                    error={idError}
+                    helperText={
+                        idError ? 'Required field (must be greater than 0)' : ''
+                    }
+                />
                 <TextField
                     label="Item Name*"
                     value={itemName}
