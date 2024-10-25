@@ -44,7 +44,6 @@ const Items = () => {
         axios
             .get(`${backend}/items`)
             .then((res) => {
-                console.log(res.data)
                 setAllItems(res.data)
                 setItems(res.data)
             })

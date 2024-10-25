@@ -143,7 +143,7 @@ const NewItem = () => {
                 </div>
             </Modal>
             <Back />
-            {error && <Error error={error} />}
+            {error && <Error error={error} data-testid="error-message" />}
             <h2>New Item</h2>
             <Stack spacing={2}>
                 <TextField
