@@ -116,7 +116,11 @@ const NewItem = () => {
 
     return (
         <div>
-            <Modal open={open} onClose={handleCloseModal}>
+            <Modal
+                open={open}
+                onClose={handleCloseModal}
+                data-testid="dialogue-modal"
+            >
                 <div className="modal">
                     <h4>Item was added successfuly!</h4>
                     <h3>Do you want to add another item or return home?</h3>
@@ -191,7 +195,9 @@ const NewItem = () => {
                         ))}
                     </Select>
                 </FormControl>
-                <Button onClick={handleSubmit}>Submit</Button>
+                <Button data-testid="btn-submit" onClick={handleSubmit}>
+                    Submit
+                </Button>
             </Stack>
         </div>
     )
