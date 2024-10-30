@@ -12,3 +12,8 @@ root.render(
         </React.StrictMode>
     </BrowserRouter>
 )
+
+// TODO: Convertir a graphql backend, utilizar servicio extra como middleware
+// TODO: CSS, estilo
+// TODO: Errores de mensajes mas amigables
+// TODO: Mensaje de "item not found" (amigable) cuando se filtra la tabla
