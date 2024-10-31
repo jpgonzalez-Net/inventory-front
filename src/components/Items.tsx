@@ -15,11 +15,11 @@ import {
 import { Add, Delete, Search } from '@mui/icons-material'
 import { Link, useNavigate } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import backend from '../utils/backend'
 import ItemType from '../assets/ItemType'
 import ErrorType from '../assets/ErrorType'
 import Error from './Error'
+import { fetchAllItems } from '../service/fetch'
+import { removeItem } from '../service/remove'
 
 const Items = () => {
     const [allItems, setAllItems] = useState<ItemType[]>([])
@@ -41,14 +41,12 @@ const Items = () => {
     }, [])
 
     const handleFetch = () => {
-        axios
-            .get(`${backend}/items`)
+        fetchAllItems()
             .then((res) => {
-                setAllItems(res.data)
-                setItems(res.data)
+                setAllItems(res)
+                setItems(res)
             })
             .catch((e) => {
-                console.error(e.message)
                 setError({
                     status: e.status,
                     message: e.response.data.message ?? 'Internal server error',
@@ -101,8 +99,7 @@ const Items = () => {
     ) => {
         e.preventDefault()
         if (itemId) {
-            axios
-                .delete(`${backend}/items/${itemId}`)
+            removeItem(`${itemId}`)
                 .then(() => {
                     setAllItems(
                         allItems.filter((item) => item.itemId !== itemId)
@@ -111,7 +108,6 @@ const Items = () => {
                     handleCloseModal()
                 })
                 .catch((e) => {
-                    console.error(`${e.status}: ${e.response.data.message}`)
                     setError({
                         status: e.status,
                         message:

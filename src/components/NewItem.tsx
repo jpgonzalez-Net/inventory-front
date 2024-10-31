@@ -11,12 +11,12 @@ import {
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LocationType from '../assets/LocationType'
-import axios from 'axios'
-import backend from '../utils/backend'
 import ErrorType from '../assets/ErrorType'
 import ItemType from '../assets/ItemType'
 import Back from './Back'
 import Error from './Error'
+import { fetchAllLocations } from '../service/fetch'
+import { createItem } from '../service/create'
 
 const NewItem = () => {
     const [itemId, setItemId] = useState<number | undefined>()
@@ -35,9 +35,8 @@ const NewItem = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        axios
-            .get(`${backend}/locations`)
-            .then((res) => setLocations(res.data))
+        fetchAllLocations()
+            .then((res) => setLocations(res))
             .catch((e) =>
                 setError({ status: e.status, message: e.response.data.message })
             )
@@ -77,8 +76,7 @@ const NewItem = () => {
                 location: locationObject,
             }
 
-            axios
-                .post(`${backend}/items`, itemObject)
+            createItem(itemObject)
                 .then(() => handleOpenModal())
                 .catch((e) =>
                     setError({

@@ -2,8 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import ItemType from '../assets/ItemType'
 import LocationType from '../assets/LocationType'
 import { useEffect } from 'react'
-import axios from 'axios'
-import backend from '../utils/backend'
+import { createItem, createLocation } from '../service/create'
 
 const Populate = () => {
     // React component to quickly populate the db
@@ -262,12 +261,10 @@ const Populate = () => {
         ]
 
         locations.forEach((location) => {
-            axios
-                .post(`${backend}/locations`, location)
+            createLocation(location)
                 .then(() => {
                     items.forEach((item) => {
-                        axios
-                            .post(`${backend}/items`, item)
+                        createItem(item)
                             .then(() => navigate('/items'))
                             .catch((e) => console.error(e.message))
                     })

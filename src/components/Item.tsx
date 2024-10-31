@@ -1,13 +1,13 @@
-import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import backend from '../utils/backend'
 import ItemType from '../assets/ItemType'
 import ErrorType from '../assets/ErrorType'
 import { Box, Button, Chip, Divider, Modal } from '@mui/material'
 import Back from './Back'
 import Error from './Error'
 import { Delete } from '@mui/icons-material'
+import { fetchItemById } from '../service/fetch'
+import { removeItem } from '../service/remove'
 
 const Item = () => {
     const { id } = useParams()
@@ -20,13 +20,11 @@ const Item = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        axios
-            .get(`${backend}/items/${id}`)
+        fetchItemById(id)
             .then((res) => {
-                setItem(res.data)
+                setItem(res)
             })
             .catch((e) => {
-                console.log(e)
                 setError({
                     status: e.status,
                     message: e.response.data.message ?? 'Internal server error',
@@ -45,14 +43,12 @@ const Item = () => {
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         e.preventDefault()
-        axios
-            .delete(`${backend}/items/${id}`)
+        removeItem(id)
             .then(() => {
                 handleCloseModal()
                 navigate('/items')
             })
             .catch((e) => {
-                console.error(`${e.status}: ${e.response.data.message}`)
                 setError({
                     status: e.status,
                     message: e.response.data.message ?? 'Internal server error',

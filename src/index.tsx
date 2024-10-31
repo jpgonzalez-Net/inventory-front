@@ -14,6 +14,7 @@ root.render(
 )
 
 // TODO: Convertir a graphql backend, utilizar servicio extra como middleware
+// TODO: Cambiar tests a graphql
 // TODO: CSS, estilo
 // TODO: Errores de mensajes mas amigables
 // TODO: Mensaje de "item not found" (amigable) cuando se filtra la tabla
