@@ -12,7 +12,12 @@ import {
     TableRow,
     TextField,
 } from '@mui/material'
-import { Add, Delete, Search } from '@mui/icons-material'
+import {
+    Add,
+    Delete,
+    Search,
+    SentimentVeryDissatisfied,
+} from '@mui/icons-material'
 import { Link, useNavigate } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import ItemType from '../assets/ItemType'
@@ -149,32 +154,50 @@ const Items = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {(rowsPerPage > 0
-                        ? items.slice(
-                              page * rowsPerPage,
-                              page * rowsPerPage + rowsPerPage
-                          )
-                        : items
-                    ).map((item) => (
-                        <TableRow key={item.itemId}>
-                            <TableCell align="left">{item.itemId}</TableCell>
-                            <TableCell align="left">
-                                <Link to={`/items/${item.itemId}`}>
-                                    {item.itemName}
-                                </Link>
-                            </TableCell>
-                            <TableCell align="center">
-                                <IconButton
-                                    aria-label="delete"
-                                    onClick={() => {
-                                        handleOpenModal(item.itemId)
-                                    }}
-                                >
-                                    <Delete />
-                                </IconButton>
+                    {items.length ? (
+                        (rowsPerPage > 0
+                            ? items.slice(
+                                  page * rowsPerPage,
+                                  page * rowsPerPage + rowsPerPage
+                              )
+                            : items
+                        ).map((item) => (
+                            <TableRow key={item.itemId}>
+                                <TableCell align="left">
+                                    {item.itemId}
+                                </TableCell>
+                                <TableCell align="left">
+                                    <Link to={`/items/${item.itemId}`}>
+                                        {item.itemName}
+                                    </Link>
+                                </TableCell>
+                                <TableCell align="center">
+                                    <IconButton
+                                        aria-label="delete"
+                                        onClick={() => {
+                                            handleOpenModal(item.itemId)
+                                        }}
+                                    >
+                                        <Delete />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))
+                    ) : !loading ? (
+                        <TableRow>
+                            <TableCell
+                                align="center"
+                                colSpan={3}
+                                className="cell-flex"
+                            >
+                                <p className="nothing-here">
+                                    Oops! There doesn't seem to be anything
+                                    here...
+                                </p>
+                                <SentimentVeryDissatisfied />
                             </TableCell>
                         </TableRow>
-                    ))}
+                    ) : null}
                 </TableBody>
             </Table>
             <TablePagination

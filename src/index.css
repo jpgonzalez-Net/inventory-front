@@ -64,3 +64,13 @@ a {
 .loading-info {
     color: rgb(49, 49, 49);
 }
+
+.cell-flex {
+    display: flex;
+    align-items: center;
+}
+
+.nothing-here {
+    font-size: larger;
+    text-align: center;
+}

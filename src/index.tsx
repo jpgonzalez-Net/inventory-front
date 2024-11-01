@@ -25,4 +25,4 @@ root.render(
 // TODO: Cambiar tests a graphql
 // TODO: CSS, estilo
 // DONE: Errores de mensajes mas amigables
-// TODO: Mensaje de "item not found" (amigable) cuando se filtra la tabla
+// DONE: Mensaje de "item not found" (amigable) cuando se filtra la tabla
