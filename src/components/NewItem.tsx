@@ -12,12 +12,12 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LocationType from '../assets/LocationType'
 import ErrorType from '../assets/ErrorType'
-import ItemType from '../assets/ItemType'
 import Back from './Back'
 import Error from './Error'
 import { useMutation, useQuery } from '@apollo/client'
 import { GET_ALL_ITEMS, GET_ALL_LOCATIONS } from '../service/queries'
 import { CREATE_ITEM } from '../service/mutations'
+import Loading from './Loading'
 // import { fetchAllLocations } from '../service/fetch'
 // import { createItem } from '../service/create'
 
@@ -122,6 +122,8 @@ const NewItem = () => {
 
     return (
         <div>
+            {itemLoading && <Loading message="Creating item..." />}
+            {locationLoading && <Loading message="Populating locations..." />}
             <Modal
                 open={open}
                 onClose={handleCloseModal}

@@ -21,8 +21,8 @@ root.render(
     </ApolloProvider>
 )
 
-// TODO: Convertir a graphql backend, utilizar servicio extra como middleware
+// DONE: Convertir a graphql backend, utilizar servicio extra como middleware
 // TODO: Cambiar tests a graphql
 // TODO: CSS, estilo
-// TODO: Errores de mensajes mas amigables
+// DONE: Errores de mensajes mas amigables
 // TODO: Mensaje de "item not found" (amigable) cuando se filtra la tabla

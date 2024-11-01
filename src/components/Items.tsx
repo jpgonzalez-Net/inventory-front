@@ -24,6 +24,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { GET_ALL_ITEMS } from '../service/queries'
 import { DELETE_ITEM } from '../service/mutations'
 import DeleteItem from './DeleteItem'
+import Loading from './Loading'
 
 const Items = () => {
     const [allItems, setAllItems] = useState<ItemType[]>([])
@@ -107,6 +108,7 @@ const Items = () => {
                     }
                 />
             )}
+            {loading && <Loading />}
             {errorMessage && <Error error={errorMessage} />}
             <Box display="flex" alignItems="center" justifyContent="end">
                 <TextField

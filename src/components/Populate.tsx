@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { useMutation } from '@apollo/client'
 import { CREATE_ITEM, CREATE_LOCATION } from '../service/mutations'
 import { GET_ALL_LOCATIONS } from '../service/queries'
+import Loading from './Loading'
 
 const Populate = () => {
     // React component to quickly populate the db
@@ -289,6 +290,7 @@ const Populate = () => {
 
     return (
         <div>
+            <Loading message="Populating database..." />
             <h2>Populating database...</h2>
         </div>
     )

@@ -9,6 +9,7 @@ import { Delete } from '@mui/icons-material'
 import DeleteItem from './DeleteItem'
 import { useQuery } from '@apollo/client'
 import { GET_ITEM } from '../service/queries'
+import Loading from './Loading'
 
 const Item = () => {
     const { id } = useParams()
@@ -39,6 +40,7 @@ const Item = () => {
 
     return (
         <div>
+            {loading && <Loading message="Loading item..." />}
             <DeleteItem
                 open={open}
                 itemId={Number(id)}
