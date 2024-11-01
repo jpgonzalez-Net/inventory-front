@@ -15,8 +15,11 @@ import ErrorType from '../assets/ErrorType'
 import ItemType from '../assets/ItemType'
 import Back from './Back'
 import Error from './Error'
-import { fetchAllLocations } from '../service/fetch'
-import { createItem } from '../service/create'
+import { useMutation, useQuery } from '@apollo/client'
+import { GET_ALL_ITEMS, GET_ALL_LOCATIONS } from '../service/queries'
+import { CREATE_ITEM } from '../service/mutations'
+// import { fetchAllLocations } from '../service/fetch'
+// import { createItem } from '../service/create'
 
 const NewItem = () => {
     const [itemId, setItemId] = useState<number | undefined>()
@@ -25,68 +28,73 @@ const NewItem = () => {
     const [locationId, setLocationId] = useState<number>(-1)
 
     const [locations, setLocations] = useState<LocationType[]>([])
-    const [error, setError] = useState<ErrorType>()
+    const [errorMessage, setErrorMessage] = useState<ErrorType>()
 
     const [nameError, setNameError] = useState(false)
     const [idError, setIdError] = useState(false)
 
     const [open, setOpen] = useState(false)
 
+    const {
+        data: locationData,
+        loading: locationLoading,
+        error: locationError,
+    } = useQuery(GET_ALL_LOCATIONS)
+
+    const [
+        createItem,
+        { data: itemData, loading: itemLoading, error: itemError },
+    ] = useMutation(CREATE_ITEM, { refetchQueries: [GET_ALL_ITEMS] })
+
     const navigate = useNavigate()
 
     useEffect(() => {
-        fetchAllLocations()
-            .then((res) => setLocations(res))
-            .catch((e) =>
-                setError({ status: e.status, message: e.response.data.message })
-            )
-    }, [])
+        if (!locationError && !locationLoading) {
+            setLocations(locationData.allLocations)
+        }
+        if (locationError) {
+            setErrorMessage({
+                status: 0,
+                message: 'There was an error fetching location data',
+            })
+        }
+    }, [locationData, locationLoading, locationError])
 
     const handleSubmit = () => {
         // const itemId: number = randomNumber()
 
         if (!itemId || itemId <= 0) {
-            setError({
+            setErrorMessage({
                 status: 400,
                 message: 'Item ID is required',
             })
             setIdError(true)
         }
         if (itemName === '') {
-            setError({
+            setErrorMessage({
                 status: 400,
                 message: 'Item Name is required',
             })
             setNameError(true)
         }
         if (itemName !== '' && itemId) {
-            const locationObject: LocationType | null =
-                locationId === -1
-                    ? null
-                    : {
-                          locationId,
-                          state: '',
-                          address: null,
-                          phoneNumber: null,
-                      }
-            const itemObject: ItemType = {
-                itemId,
-                itemName,
-                description,
-                location: locationObject,
-            }
-
-            createItem(itemObject)
+            createItem({
+                variables: {
+                    itemId,
+                    itemName,
+                    description: description ?? null,
+                    locationId,
+                },
+            })
                 .then(() => handleOpenModal())
                 .catch((e) =>
-                    setError({
-                        status: e.status,
-                        message:
-                            e.response.data.message ?? 'Internal server error',
+                    setErrorMessage({
+                        status: 0,
+                        message: e.message,
                     })
                 )
         } else {
-            setError({
+            setErrorMessage({
                 status: 400,
                 message: 'Item ID and Name are required',
             })
@@ -102,7 +110,7 @@ const NewItem = () => {
     }
 
     const handleAnotherItem = () => {
-        setError(undefined)
+        setErrorMessage(undefined)
         setNameError(false)
         setIdError(false)
         setItemId(undefined)
@@ -141,7 +149,9 @@ const NewItem = () => {
                 </div>
             </Modal>
             <Back />
-            {error && <Error error={error} data-testid="error-message" />}
+            {errorMessage && (
+                <Error error={errorMessage} data-testid="error-message" />
+            )}
             <h2>New Item</h2>
             <Stack spacing={2}>
                 <TextField

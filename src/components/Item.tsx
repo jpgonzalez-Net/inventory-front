@@ -6,31 +6,29 @@ import { Box, Button, Chip, Divider, Modal } from '@mui/material'
 import Back from './Back'
 import Error from './Error'
 import { Delete } from '@mui/icons-material'
-import { fetchItemById } from '../service/fetch'
-import { removeItem } from '../service/remove'
+import DeleteItem from './DeleteItem'
+import { useQuery } from '@apollo/client'
+import { GET_ITEM } from '../service/queries'
 
 const Item = () => {
     const { id } = useParams()
 
+    const { data, loading, error } = useQuery(GET_ITEM, {
+        variables: { itemId: Number(id) },
+    })
+
     const [open, setOpen] = useState(false)
 
     const [item, setItem] = useState<ItemType>()
-    const [error, setError] = useState<ErrorType>()
+    const [errorMessage, setErrorMessage] = useState<ErrorType>()
 
     const navigate = useNavigate()
 
     useEffect(() => {
-        fetchItemById(id)
-            .then((res) => {
-                setItem(res)
-            })
-            .catch((e) => {
-                setError({
-                    status: e.status,
-                    message: e.response.data.message ?? 'Internal server error',
-                })
-            })
-    }, [id])
+        if (!error && !loading) {
+            setItem(data.item)
+        }
+    }, [data, loading, error])
 
     const handleOpenModal = () => {
         setOpen(!open)
@@ -39,49 +37,17 @@ const Item = () => {
         setOpen(!open)
     }
 
-    const handleDelete = (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ) => {
-        e.preventDefault()
-        removeItem(id)
-            .then(() => {
-                handleCloseModal()
-                navigate('/items')
-            })
-            .catch((e) => {
-                setError({
-                    status: e.status,
-                    message: e.response.data.message ?? 'Internal server error',
-                })
-                handleCloseModal()
-            })
-    }
-
     return (
         <div>
-            <Modal open={open} onClose={handleCloseModal}>
-                <div className="modal">
-                    <h4>Are you sure?</h4>
-                    <div className="modal-buttons">
-                        <Button
-                            variant="outlined"
-                            color="success"
-                            onClick={(e) => handleDelete(e)}
-                        >
-                            Yes, delete
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            onClick={handleCloseModal}
-                        >
-                            Cancel
-                        </Button>
-                    </div>
-                </div>
-            </Modal>
+            <DeleteItem
+                open={open}
+                itemId={Number(id)}
+                handleClose={handleCloseModal}
+                handleError={(e) => setErrorMessage({ status: 0, message: e })}
+                afterDelete={() => navigate('/items')}
+            />
             <Back />
-            {error && <Error error={error} />}
+            {errorMessage && <Error error={errorMessage} />}
             {item && (
                 <div>
                     <Box sx={{ p: 2 }}>

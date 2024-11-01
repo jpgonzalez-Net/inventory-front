@@ -20,10 +20,16 @@ import ErrorType from '../assets/ErrorType'
 import Error from './Error'
 import { fetchAllItems } from '../service/fetch'
 import { removeItem } from '../service/remove'
+import { useMutation, useQuery } from '@apollo/client'
+import { GET_ALL_ITEMS } from '../service/queries'
+import { DELETE_ITEM } from '../service/mutations'
+import DeleteItem from './DeleteItem'
 
 const Items = () => {
     const [allItems, setAllItems] = useState<ItemType[]>([])
-    const [error, setError] = useState<ErrorType>()
+    const [errorMessage, setErrorMessage] = useState<ErrorType>()
+
+    const { loading, error, data } = useQuery(GET_ALL_ITEMS)
 
     const [filter, setFilter] = useState('')
     const [items, setItems] = useState<ItemType[]>([])
@@ -37,22 +43,15 @@ const Items = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        handleFetch()
-    }, [])
-
-    const handleFetch = () => {
-        fetchAllItems()
-            .then((res) => {
-                setAllItems(res)
-                setItems(res)
-            })
-            .catch((e) => {
-                setError({
-                    status: e.status,
-                    message: e.response.data.message ?? 'Internal server error',
-                })
-            })
-    }
+        if (!loading && !error) {
+            setAllItems(data.allItems)
+            setItems(data.allItems)
+        }
+        if (error) {
+            console.error(error)
+            // setErrorMessage(0, error)
+        }
+    }, [loading, error, data])
 
     const handleFilter = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -93,56 +92,22 @@ const Items = () => {
         setOpen(!open)
     }
 
-    const handleDelete = (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-        itemId: number | undefined
-    ) => {
-        e.preventDefault()
-        if (itemId) {
-            removeItem(`${itemId}`)
-                .then(() => {
-                    setAllItems(
-                        allItems.filter((item) => item.itemId !== itemId)
-                    )
-                    setItems(items.filter((item) => item.itemId !== itemId))
-                    handleCloseModal()
-                })
-                .catch((e) => {
-                    setError({
-                        status: e.status,
-                        message:
-                            e.response.data.message ?? 'Internal server error',
-                    })
-                    handleCloseModal()
-                    handleFetch()
-                })
-        }
-    }
-
     return (
         <div>
-            <Modal open={open} onClose={handleCloseModal}>
-                <div className="modal">
-                    <h4>Are you sure?</h4>
-                    <div className="modal-buttons">
-                        <Button
-                            variant="outlined"
-                            color="success"
-                            onClick={(e) => handleDelete(e, selectedItemId)}
-                        >
-                            Yes, delete
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            onClick={handleCloseModal}
-                        >
-                            Cancel
-                        </Button>
-                    </div>
-                </div>
-            </Modal>
-            {error && <Error error={error} />}
+            {open && selectedItemId && (
+                <DeleteItem
+                    itemId={selectedItemId}
+                    open={open}
+                    handleClose={handleCloseModal}
+                    handleError={(e) =>
+                        setErrorMessage({
+                            status: 0,
+                            message: e,
+                        })
+                    }
+                />
+            )}
+            {errorMessage && <Error error={errorMessage} />}
             <Box display="flex" alignItems="center" justifyContent="end">
                 <TextField
                     label="filter"
@@ -202,9 +167,6 @@ const Items = () => {
                                     onClick={() => {
                                         handleOpenModal(item.itemId)
                                     }}
-                                    // onClick={(e) =>
-                                    //     handleDelete(e, item.itemId)
-                                    // }
                                 >
                                     <Delete />
                                 </IconButton>

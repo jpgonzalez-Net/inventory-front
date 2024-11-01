@@ -24,3 +24,14 @@ export const GET_ITEM = gql`
         }
     }
 `
+
+export const GET_ALL_LOCATIONS = gql`
+    query GetLocations {
+        allLocations {
+            locationId
+            state
+            address
+            phoneNumber
+        }
+    }
+`

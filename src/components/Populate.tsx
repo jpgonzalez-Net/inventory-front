@@ -2,12 +2,21 @@ import { useNavigate } from 'react-router-dom'
 import ItemType from '../assets/ItemType'
 import LocationType from '../assets/LocationType'
 import { useEffect } from 'react'
-import { createItem, createLocation } from '../service/create'
+import { useMutation } from '@apollo/client'
+import { CREATE_ITEM, CREATE_LOCATION } from '../service/mutations'
+import { GET_ALL_LOCATIONS } from '../service/queries'
 
 const Populate = () => {
     // React component to quickly populate the db
 
     const navigate = useNavigate()
+
+    const [createLocation] = useMutation(CREATE_LOCATION, {
+        refetchQueries: [GET_ALL_LOCATIONS],
+    })
+    const [createItem] = useMutation(CREATE_ITEM, {
+        refetchQueries: [GET_ALL_LOCATIONS],
+    })
 
     useEffect(() => {
         const locations: LocationType[] = [
@@ -261,10 +270,15 @@ const Populate = () => {
         ]
 
         locations.forEach((location) => {
-            createLocation(location)
+            createLocation({ variables: { ...location } })
                 .then(() => {
                     items.forEach((item) => {
-                        createItem(item)
+                        createItem({
+                            variables: {
+                                ...item,
+                                locationId: item.location?.locationId ?? null,
+                            },
+                        })
                             .then(() => navigate('/items'))
                             .catch((e) => console.error(e.message))
                     })
