@@ -8,9 +8,7 @@ import {
     Card,
     CardContent,
     CardHeader,
-    Chip,
     Divider,
-    Modal,
 } from '@mui/material'
 import Back from './Back'
 import Error from './Error'

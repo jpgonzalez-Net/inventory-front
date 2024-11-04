@@ -1,6 +1,5 @@
 import { useMutation } from '@apollo/client'
-import { Box, Button, Modal, SxProps } from '@mui/material'
-import React from 'react'
+import { Box, Button, Modal } from '@mui/material'
 import { DELETE_ITEM } from '../service/mutations'
 import { GET_ALL_ITEMS } from '../service/queries'
 import Loading from './Loading'

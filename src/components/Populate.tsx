@@ -8,8 +8,6 @@ import { GET_ALL_LOCATIONS } from '../service/queries'
 import Loading from './Loading'
 
 const Populate = () => {
-    // React component to quickly populate the db
-
     const navigate = useNavigate()
 
     const [createLocation] = useMutation(CREATE_LOCATION, {
@@ -286,7 +284,7 @@ const Populate = () => {
                 })
                 .catch((e) => console.error(e.message))
         })
-    }, [navigate])
+    }, [navigate, createItem, createLocation])
 
     return (
         <div>

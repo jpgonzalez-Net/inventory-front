@@ -1,9 +1,7 @@
 import {
     Box,
-    Button,
     IconButton,
     InputAdornment,
-    Modal,
     Table,
     TableBody,
     TableCell,
@@ -23,11 +21,8 @@ import React, { useEffect, useState } from 'react'
 import ItemType from '../assets/ItemType'
 import ErrorType from '../assets/ErrorType'
 import Error from './Error'
-import { fetchAllItems } from '../service/fetch'
-import { removeItem } from '../service/remove'
-import { useMutation, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { GET_ALL_ITEMS } from '../service/queries'
-import { DELETE_ITEM } from '../service/mutations'
 import DeleteItem from './DeleteItem'
 import Loading from './Loading'
 

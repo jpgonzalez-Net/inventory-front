@@ -20,8 +20,6 @@ import { GET_ALL_ITEMS, GET_ALL_LOCATIONS } from '../service/queries'
 import { CREATE_ITEM } from '../service/mutations'
 import Loading from './Loading'
 import { modalStyle } from '../assets/ModalStyle'
-// import { fetchAllLocations } from '../service/fetch'
-// import { createItem } from '../service/create'
 
 const NewItem = () => {
     const [itemId, setItemId] = useState<number | undefined>()
@@ -43,10 +41,9 @@ const NewItem = () => {
         error: locationError,
     } = useQuery(GET_ALL_LOCATIONS)
 
-    const [
-        createItem,
-        { data: itemData, loading: itemLoading, error: itemError },
-    ] = useMutation(CREATE_ITEM, { refetchQueries: [GET_ALL_ITEMS] })
+    const [createItem, { loading: itemLoading }] = useMutation(CREATE_ITEM, {
+        refetchQueries: [GET_ALL_ITEMS],
+    })
 
     const navigate = useNavigate()
 
