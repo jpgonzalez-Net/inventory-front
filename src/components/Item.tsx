@@ -2,7 +2,16 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import ItemType from '../assets/ItemType'
 import ErrorType from '../assets/ErrorType'
-import { Box, Button, Chip, Divider, Modal } from '@mui/material'
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    Chip,
+    Divider,
+    Modal,
+} from '@mui/material'
 import Back from './Back'
 import Error from './Error'
 import { Delete } from '@mui/icons-material'
@@ -50,64 +59,52 @@ const Item = () => {
             />
             <Back />
             {errorMessage && <Error error={errorMessage} />}
+
             {item && (
                 <div>
-                    <Box sx={{ p: 2 }}>
-                        <Chip
-                            label={
-                                <span>
-                                    <b>ID:</b> {item.itemId}
-                                </span>
-                            }
-                            className="id-label"
-                            size="small"
+                    <Card sx={{ marginTop: 2 }}>
+                        <CardHeader
+                            title={item.itemName}
+                            subheader={`ID: ${item.itemId}`}
                         />
-                        <h2 className="item-title">{item?.itemName}</h2>
-                        <p>{item?.description}</p>
-                    </Box>
-                    {item?.location ? (
-                        <>
-                            <Divider />
+                        <CardContent>
+                            {item.description && (
+                                <div>
+                                    <h4>Description:</h4>
+                                    <p>{item.description}</p>
+                                </div>
+                            )}
+                            {item.location && (
+                                <div>
+                                    <Divider />
+                                    <h3>Location:</h3>
+                                    <p>
+                                        Location ID: {item.location.locationId}
+                                    </p>
+                                    <p>State: {item.location.state}</p>
+                                    {item.location.address && (
+                                        <p>Address: {item.location.address}</p>
+                                    )}
+                                    {item.location.phoneNumber && (
+                                        <p>
+                                            Phone Number:{' '}
+                                            {item.location.phoneNumber}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
                             <Box sx={{ p: 2 }}>
-                                <h3>Location:</h3>
-                                <Chip
-                                    label={
-                                        <span>
-                                            <b>ID:</b> {item.itemId}
-                                        </span>
-                                    }
-                                    className="id-label"
-                                    size="small"
-                                />
-                                <h4 className="item-title">
-                                    {item.location.address}
-                                </h4>
-                                {item.location.state && (
-                                    <p>
-                                        <b>State:</b> {item.location.state}
-                                    </p>
-                                )}
-                                {item.location.phoneNumber && (
-                                    <p>
-                                        <b>Phone #:</b>{' '}
-                                        {item.location.phoneNumber}
-                                    </p>
-                                )}
+                                <Button
+                                    color="error"
+                                    onClick={handleOpenModal}
+                                    startIcon={<Delete />}
+                                    variant="contained"
+                                >
+                                    Delete
+                                </Button>
                             </Box>
-                        </>
-                    ) : (
-                        <></>
-                    )}
-                    <Box sx={{ p: 2 }}>
-                        <Button
-                            color="error"
-                            onClick={handleOpenModal}
-                            startIcon={<Delete />}
-                            variant="contained"
-                        >
-                            Delete
-                        </Button>
-                    </Box>
+                        </CardContent>
+                    </Card>
                 </div>
             )}
         </div>

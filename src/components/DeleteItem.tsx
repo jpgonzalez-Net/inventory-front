@@ -1,9 +1,10 @@
 import { useMutation } from '@apollo/client'
-import { Button, Modal } from '@mui/material'
+import { Box, Button, Modal, SxProps } from '@mui/material'
 import React from 'react'
 import { DELETE_ITEM } from '../service/mutations'
 import { GET_ALL_ITEMS } from '../service/queries'
 import Loading from './Loading'
+import { modalStyle } from '../assets/ModalStyle'
 
 interface deleteItemProps {
     itemId: number
@@ -44,7 +45,7 @@ const DeleteItem = ({
         <div>
             {loading && <Loading message={`Deleting item ${itemId}...`} />}
             <Modal open={open} onClose={handleClose}>
-                <div className="modal">
+                <Box sx={modalStyle}>
                     <h4>Are you sure?</h4>
                     <div className="modal-buttons">
                         <Button
@@ -62,7 +63,7 @@ const DeleteItem = ({
                             Cancel
                         </Button>
                     </div>
-                </div>
+                </Box>
             </Modal>
         </div>
     )

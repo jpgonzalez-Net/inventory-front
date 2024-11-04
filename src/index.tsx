@@ -4,6 +4,8 @@ import './index.css'
 import App from './App'
 import { BrowserRouter } from 'react-router-dom'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
+import { CssBaseline, ThemeProvider } from '@mui/material'
+import theme from './utils/theme'
 
 const client = new ApolloClient({
     uri: 'http://localhost:4000/graphql',
@@ -15,7 +17,10 @@ root.render(
     <ApolloProvider client={client}>
         <BrowserRouter>
             <React.StrictMode>
-                <App />
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <App />
+                </ThemeProvider>
             </React.StrictMode>
         </BrowserRouter>
     </ApolloProvider>

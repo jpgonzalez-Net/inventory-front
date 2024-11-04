@@ -1,4 +1,5 @@
 import {
+    Box,
     Button,
     FormControl,
     InputLabel,
@@ -18,6 +19,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { GET_ALL_ITEMS, GET_ALL_LOCATIONS } from '../service/queries'
 import { CREATE_ITEM } from '../service/mutations'
 import Loading from './Loading'
+import { modalStyle } from '../assets/ModalStyle'
 // import { fetchAllLocations } from '../service/fetch'
 // import { createItem } from '../service/create'
 
@@ -129,7 +131,7 @@ const NewItem = () => {
                 onClose={handleCloseModal}
                 data-testid="dialogue-modal"
             >
-                <div className="modal">
+                <Box sx={modalStyle}>
                     <h4>Item was added successfuly!</h4>
                     <h3>Do you want to add another item or return home?</h3>
                     <div className="modal-buttons">
@@ -148,7 +150,7 @@ const NewItem = () => {
                             Return home
                         </Button>
                     </div>
-                </div>
+                </Box>
             </Modal>
             <Back />
             {errorMessage && (

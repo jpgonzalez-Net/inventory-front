@@ -142,13 +142,13 @@ const Items = () => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell align="left">
+                        <TableCell align="left" width="20%">
                             <b>Item ID</b>
                         </TableCell>
-                        <TableCell align="left">
+                        <TableCell align="left" width="65%">
                             <b>Item Name</b>
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center" width="15%">
                             <b>Delete</b>
                         </TableCell>
                     </TableRow>

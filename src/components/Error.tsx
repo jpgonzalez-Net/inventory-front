@@ -9,7 +9,7 @@ const Error = ({ error }: ErrorProps) => {
     return (
         <Box sx={{ p: 2 }}>
             <Alert severity="error">
-                <b>Error {error.status}:</b> {error.message}
+                <b>Error:</b> {error.message}
             </Alert>
         </Box>
     )
