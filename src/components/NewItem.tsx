@@ -25,7 +25,7 @@ const NewItem = () => {
     const [itemId, setItemId] = useState<number | undefined>()
     const [itemName, setItemName] = useState('')
     const [description, setDescription] = useState('')
-    const [locationId, setLocationId] = useState<number>(-1)
+    const [locationId, setLocationId] = useState<number>(0)
 
     const [locations, setLocations] = useState<LocationType[]>([])
     const [errorMessage, setErrorMessage] = useState<ErrorType>()
@@ -81,8 +81,8 @@ const NewItem = () => {
                 variables: {
                     itemId,
                     itemName,
-                    description: description ?? null,
-                    locationId,
+                    description: description.length === 0 ? null : description,
+                    locationId: locationId === 0 ? null : locationId,
                 },
             })
                 .then(() => handleOpenModal())
@@ -191,7 +191,7 @@ const NewItem = () => {
                             setLocationId(e.target.value as number)
                         }
                     >
-                        <MenuItem value={-1}>
+                        <MenuItem value={0}>
                             <i>None</i>
                         </MenuItem>
                         {locations.map((loc) => (

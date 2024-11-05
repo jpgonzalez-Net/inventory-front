@@ -1,8 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import axios from 'axios'
 import ItemType from '../assets/ItemType'
 import Items from '../components/Items'
 import '@testing-library/jest-dom'
+import { MockedProvider } from '@apollo/client/testing'
+import { GET_ALL_ITEMS } from '../service/queries'
 
 jest.mock('react-router-dom', () => ({
     ...(jest.requireActual('react-router-dom') as {}),
@@ -10,7 +11,40 @@ jest.mock('react-router-dom', () => ({
     Link: () => <></>,
 }))
 
-jest.mock('axios')
+const mockItems: ItemType[] = [
+    {
+        itemId: 1001,
+        itemName: 'Item001',
+        description: null,
+        location: null,
+    },
+    {
+        itemId: 1002,
+        itemName: 'Item002',
+        description: null,
+        location: null,
+    },
+    {
+        itemId: 1003,
+        itemName: 'Item003',
+        description: null,
+        location: null,
+    },
+]
+
+const mocks = [
+    {
+        request: {
+            query: GET_ALL_ITEMS,
+        },
+        result: {
+            data: {
+                allItems: mockItems,
+            },
+        },
+        maxUsageCount: 2,
+    },
+]
 
 describe('Items', () => {
     beforeEach(() => {
@@ -18,31 +52,12 @@ describe('Items', () => {
     })
 
     it('renders all items', async () => {
-        const mockItems: ItemType[] = [
-            {
-                itemId: 1001,
-                itemName: 'Item001',
-                description: null,
-                location: null,
-            },
-            {
-                itemId: 1002,
-                itemName: 'Item002',
-                description: null,
-                location: null,
-            },
-            {
-                itemId: 1003,
-                itemName: 'Item003',
-                description: null,
-                location: null,
-            },
-        ]
-        // mock GET request to get a list of items
-        ;(axios.get as jest.Mock).mockResolvedValue({ data: mockItems })
-
         // render Items
-        render(<Items />)
+        render(
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <Items />
+            </MockedProvider>
+        )
 
         // after events finish
         await waitFor(() => {
@@ -56,31 +71,12 @@ describe('Items', () => {
     })
 
     it('renders filtered items', async () => {
-        const mockItems: ItemType[] = [
-            {
-                itemId: 1001,
-                itemName: 'Item001',
-                description: null,
-                location: null,
-            },
-            {
-                itemId: 1002,
-                itemName: 'Item002',
-                description: null,
-                location: null,
-            },
-            {
-                itemId: 1003,
-                itemName: 'Item003',
-                description: null,
-                location: null,
-            },
-        ]
-        // mock GET request to get a list of items
-        ;(axios.get as jest.Mock).mockResolvedValue({ data: mockItems })
-
         // render Items
-        render(<Items />)
+        render(
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <Items />
+            </MockedProvider>
+        )
 
         // wait for events to finish
         await waitFor(() => {

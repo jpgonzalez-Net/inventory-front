@@ -36,6 +36,9 @@ const Item = () => {
         if (!error && !loading) {
             setItem(data.item)
         }
+        if (error) {
+            setErrorMessage({ status: 0, message: error.message })
+        }
     }, [data, loading, error])
 
     const handleOpenModal = () => {

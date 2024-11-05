@@ -3,38 +3,83 @@ import NewItem from '../components/NewItem'
 import axios from 'axios'
 import LocationType from '../assets/LocationType'
 import '@testing-library/jest-dom'
+import { GET_ALL_LOCATIONS } from '../service/queries'
+import { MockedProvider } from '@apollo/client/testing'
+import { CREATE_ITEM } from '../service/mutations'
+import { GraphQLError } from 'graphql'
 
 jest.mock('react-router-dom', () => ({
     ...(jest.requireActual('react-router-dom') as {}),
     useNavigate: () => jest.fn(),
 }))
 
-jest.mock('axios')
+const mockLocations: LocationType[] = [
+    {
+        locationId: 1001,
+        state: 'TX',
+        address: 'some adress',
+        phoneNumber: 1080,
+    },
+    {
+        locationId: 1002,
+        state: 'MS',
+        address: 'some adress',
+        phoneNumber: 1008,
+    },
+]
+
+const mocks = [
+    {
+        request: {
+            query: GET_ALL_LOCATIONS,
+        },
+        result: {
+            data: { allLocations: mockLocations },
+        },
+        maxUsageCount: 4,
+    },
+    {
+        request: {
+            query: CREATE_ITEM,
+            variables: {
+                itemId: 5001,
+                itemName: 'ItemTest',
+                description: null,
+                locationId: null,
+            },
+        },
+        result: {
+            data: { addItem: { itemId: 5001 } },
+        },
+    },
+    {
+        request: {
+            query: CREATE_ITEM,
+            variables: {
+                itemId: 5002,
+                itemName: 'ItemTest',
+                description: null,
+                locationId: null,
+            },
+        },
+        result: {
+            errors: [new GraphQLError('Error!')],
+        },
+    },
+]
 
 describe('NewItem', () => {
     beforeEach(() => {
         jest.clearAllMocks()
-        ;(axios.get as jest.Mock).mockResolvedValue({ data: mockLocations })
     })
-
-    const mockLocations: LocationType[] = [
-        {
-            locationId: 1001,
-            state: 'TX',
-            address: 'some adress',
-            phoneNumber: 1080,
-        },
-        {
-            locationId: 1002,
-            state: 'MS',
-            address: 'some adress',
-            phoneNumber: 1008,
-        },
-    ]
 
     test('It renders 2 text input fields, 1 number input field, 1 select and one submit button on the screen', async () => {
         // render NewItem
-        render(<NewItem />)
+        render(
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <NewItem />
+            </MockedProvider>
+        )
 
         // Get all the form elements
         const inputFieldsText = screen.getAllByRole('textbox')
@@ -50,11 +95,12 @@ describe('NewItem', () => {
     })
 
     test('It renders the Modal after clicking submit', async () => {
-        // mock the jest POST request
-        ;(axios.post as jest.Mock).mockResolvedValue({ data: {} })
-
         //render NewItem
-        render(<NewItem />)
+        render(
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <NewItem />
+            </MockedProvider>
+        )
 
         // get the required elements
         const nameField = screen.getByRole('textbox', {
@@ -84,18 +130,12 @@ describe('NewItem', () => {
     })
 
     test('It renders Error alert correctly if ID already exists in database', async () => {
-        // mock the post request with status 409 and message 'error'
-        ;(axios.post as jest.Mock).mockRejectedValue({
-            status: 409,
-            response: {
-                data: {
-                    message: 'error',
-                },
-            },
-        })
-
         // render NewItem
-        render(<NewItem />)
+        render(
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <NewItem />
+            </MockedProvider>
+        )
 
         //  get required fields
         const nameField = screen.getByRole('textbox', {
@@ -110,7 +150,7 @@ describe('NewItem', () => {
 
         // change the field values
         fireEvent.change(nameField, { target: { value: 'ItemTest' } })
-        fireEvent.change(idField, { target: { value: '5001' } })
+        fireEvent.change(idField, { target: { value: '5002' } })
 
         // click submit button
         fireEvent.click(submitButton)
@@ -118,9 +158,7 @@ describe('NewItem', () => {
         // after all the events finish
         await waitFor(() => {
             // we expect to see the error message
-            expect(screen.getByRole('alert')).toHaveTextContent(
-                'Error 409: error'
-            )
+            expect(screen.getByRole('alert')).toHaveTextContent('Error!')
         })
 
         // we expect NOT to see the modal message
@@ -131,7 +169,11 @@ describe('NewItem', () => {
 
     test('It renders the Error alert if ID or Name is not entered', async () => {
         // render NewItem
-        render(<NewItem />)
+        render(
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <NewItem />
+            </MockedProvider>
+        )
 
         // click submit button
         fireEvent.click(
