@@ -20,6 +20,7 @@ import { GET_ALL_ITEMS, GET_ALL_LOCATIONS } from '../service/queries'
 import { CREATE_ITEM } from '../service/mutations'
 import Loading from './Loading'
 import { modalStyle } from '../assets/ModalStyle'
+import { useSnackbar } from 'notistack'
 
 const NewItem = () => {
     const [itemId, setItemId] = useState<number | undefined>()
@@ -28,7 +29,6 @@ const NewItem = () => {
     const [locationId, setLocationId] = useState<number>(0)
 
     const [locations, setLocations] = useState<LocationType[]>([])
-    const [errorMessage, setErrorMessage] = useState<ErrorType>()
 
     const [nameError, setNameError] = useState(false)
     const [idError, setIdError] = useState(false)
@@ -41,42 +41,52 @@ const NewItem = () => {
         error: locationError,
     } = useQuery(GET_ALL_LOCATIONS)
 
-    const [createItem, { loading: itemLoading }] = useMutation(CREATE_ITEM, {
-        refetchQueries: [GET_ALL_ITEMS],
-    })
+    const [createItem, { loading: itemLoading, error: itemError }] =
+        useMutation(CREATE_ITEM, {
+            refetchQueries: [GET_ALL_ITEMS],
+        })
 
     const navigate = useNavigate()
+    const { enqueueSnackbar } = useSnackbar()
 
     useEffect(() => {
         if (!locationError && !locationLoading) {
             setLocations(locationData.allLocations)
         }
         if (locationError) {
-            setErrorMessage({
-                status: 0,
-                message: 'There was an error fetching location data',
+            enqueueSnackbar('There was an error fetching location data', {
+                variant: 'error',
             })
         }
     }, [locationData, locationLoading, locationError])
 
+    useEffect(() => {
+        if (itemError) {
+            enqueueSnackbar(itemError.message, { variant: 'error' })
+        }
+    }, [itemError])
+
     const handleSubmit = () => {
         // const itemId: number = randomNumber()
 
-        if (!itemId || itemId <= 0) {
-            setErrorMessage({
-                status: 400,
-                message: 'Item ID is required',
+        if (itemId && itemId > 0) {
+            setIdError(false)
+        }
+        if (itemName !== '') {
+            setNameError(false)
+        }
+
+        if ((!itemId || itemId <= 0) && itemName === '') {
+            enqueueSnackbar('Item ID and Name are required', {
+                variant: 'error',
             })
+        } else if (!itemId || itemId <= 0) {
+            enqueueSnackbar('Item ID is required', { variant: 'error' })
             setIdError(true)
-        }
-        if (itemName === '') {
-            setErrorMessage({
-                status: 400,
-                message: 'Item Name is required',
-            })
+        } else if (itemName === '') {
+            enqueueSnackbar('Item Name is required', { variant: 'error' })
             setNameError(true)
-        }
-        if (itemName !== '' && itemId) {
+        } else {
             createItem({
                 variables: {
                     itemId,
@@ -85,18 +95,13 @@ const NewItem = () => {
                     locationId: locationId === 0 ? null : locationId,
                 },
             })
-                .then(() => handleOpenModal())
-                .catch((e) =>
-                    setErrorMessage({
-                        status: 0,
-                        message: e.message,
+                .then(() => {
+                    enqueueSnackbar('Item added successfully!', {
+                        variant: 'success',
                     })
-                )
-        } else {
-            setErrorMessage({
-                status: 400,
-                message: 'Item ID and Name are required',
-            })
+                    handleOpenModal()
+                })
+                .catch((e) => enqueueSnackbar(e.message, { variant: 'error' }))
         }
     }
 
@@ -109,7 +114,6 @@ const NewItem = () => {
     }
 
     const handleAnotherItem = () => {
-        setErrorMessage(undefined)
         setNameError(false)
         setIdError(false)
         setItemId(undefined)
@@ -150,9 +154,6 @@ const NewItem = () => {
                 </Box>
             </Modal>
             <Back />
-            {errorMessage && (
-                <Error error={errorMessage} data-testid="error-message" />
-            )}
             <h2>New Item</h2>
             <Stack spacing={2}>
                 <TextField

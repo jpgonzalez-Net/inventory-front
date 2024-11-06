@@ -25,10 +25,10 @@ import { useQuery } from '@apollo/client'
 import { GET_ALL_ITEMS } from '../service/queries'
 import DeleteItem from './DeleteItem'
 import Loading from './Loading'
+import { useSnackbar } from 'notistack'
 
 const Items = () => {
     const [allItems, setAllItems] = useState<ItemType[]>([])
-    const [errorMessage, setErrorMessage] = useState<ErrorType>()
 
     const { loading, error, data } = useQuery(GET_ALL_ITEMS)
 
@@ -42,6 +42,7 @@ const Items = () => {
     const [selectedItemId, setSelectedItemId] = useState<number | undefined>()
 
     const navigate = useNavigate()
+    const { enqueueSnackbar } = useSnackbar()
 
     useEffect(() => {
         if (!loading && !error) {
@@ -50,7 +51,7 @@ const Items = () => {
         }
         if (error) {
             console.error(error)
-            // setErrorMessage(0, error)
+            enqueueSnackbar(error.message)
         }
     }, [loading, error, data])
 
@@ -100,16 +101,9 @@ const Items = () => {
                     itemId={selectedItemId}
                     open={open}
                     handleClose={handleCloseModal}
-                    handleError={(e) =>
-                        setErrorMessage({
-                            status: 0,
-                            message: e,
-                        })
-                    }
                 />
             )}
             {loading && <Loading />}
-            {errorMessage && <Error error={errorMessage} />}
             <Box display="flex" alignItems="center" justifyContent="end">
                 <TextField
                     label="filter"

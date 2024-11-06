@@ -1,15 +1,16 @@
-import { useMutation } from '@apollo/client'
+import { ApolloClient, useApolloClient, useMutation } from '@apollo/client'
 import { Box, Button, Modal } from '@mui/material'
 import { DELETE_ITEM } from '../service/mutations'
 import { GET_ALL_ITEMS } from '../service/queries'
 import Loading from './Loading'
 import { modalStyle } from '../assets/ModalStyle'
+import { useSnackbar } from 'notistack'
 
 interface deleteItemProps {
     itemId: number
     open: boolean
     handleClose: () => void
-    handleError: (error: string) => void
+    handleError?: (error: string) => void
     afterDelete?: () => void
 }
 
@@ -23,6 +24,9 @@ const DeleteItem = ({
     const [mutateFunction, { loading }] = useMutation(DELETE_ITEM, {
         refetchQueries: [GET_ALL_ITEMS],
     })
+    const client = useApolloClient()
+
+    const { enqueueSnackbar } = useSnackbar()
 
     const handleDelete = () => {
         mutateFunction({ variables: { itemId } })
@@ -32,17 +36,20 @@ const DeleteItem = ({
                 if (afterDelete) {
                     afterDelete()
                 }
+                enqueueSnackbar('Deleted item successfully', {
+                    variant: 'success',
+                })
             })
             .catch((e) => {
-                handleError(e.message)
-                console.error(e)
+                enqueueSnackbar(e.message, { variant: 'error' })
+                client.refetchQueries({ include: [GET_ALL_ITEMS] })
+                handleError && handleError(e.message)
                 handleClose()
             })
     }
 
     return (
         <div>
-            {loading && <Loading message={`Deleting item ${itemId}...`} />}
             <Modal open={open} onClose={handleClose}>
                 <Box sx={modalStyle}>
                     <h4>Are you sure?</h4>
@@ -64,6 +71,7 @@ const DeleteItem = ({
                     </div>
                 </Box>
             </Modal>
+            {loading && <Loading message={`Deleting item ${itemId}...`} />}
         </div>
     )
 }

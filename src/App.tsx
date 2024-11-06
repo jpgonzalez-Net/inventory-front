@@ -4,6 +4,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import Item from './components/Item'
 import NewItem from './components/NewItem'
 import Populate from './components/Populate'
+import PopulateItems from './components/PopulateItems'
 
 const App = () => {
     return (
@@ -15,6 +16,7 @@ const App = () => {
                 <Route path="/items/:id" element={<Item />} />
                 <Route path="/newItem" element={<NewItem />} />
                 <Route path="/populate" element={<Populate />} />
+                <Route path="/populate/items" element={<PopulateItems />} />
             </Routes>
         </Container>
     )

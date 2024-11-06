@@ -6,12 +6,14 @@ interface loadingProps {
 
 const Loading = ({ message = 'Loading...' }: loadingProps) => {
     return (
-        <Backdrop open={true}>
-            <div className="loading">
-                <CircularProgress />
-                <p className="loading-info">{message}</p>
-            </div>
-        </Backdrop>
+        <div className="loading-container">
+            <Backdrop open={true}>
+                <div className="loading">
+                    <CircularProgress />
+                    <p className="loading-info">{message}</p>
+                </div>
+            </Backdrop>
+        </div>
     )
 }
 

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import ItemType from '../assets/ItemType'
-import ErrorType from '../assets/ErrorType'
 import {
     Box,
     Button,
@@ -11,12 +10,12 @@ import {
     Divider,
 } from '@mui/material'
 import Back from './Back'
-import Error from './Error'
 import { Delete } from '@mui/icons-material'
 import DeleteItem from './DeleteItem'
 import { useQuery } from '@apollo/client'
 import { GET_ITEM } from '../service/queries'
 import Loading from './Loading'
+import { useSnackbar } from 'notistack'
 
 const Item = () => {
     const { id } = useParams()
@@ -28,16 +27,16 @@ const Item = () => {
     const [open, setOpen] = useState(false)
 
     const [item, setItem] = useState<ItemType>()
-    const [errorMessage, setErrorMessage] = useState<ErrorType>()
 
     const navigate = useNavigate()
+    const { enqueueSnackbar } = useSnackbar()
 
     useEffect(() => {
         if (!error && !loading) {
             setItem(data.item)
         }
         if (error) {
-            setErrorMessage({ status: 0, message: error.message })
+            enqueueSnackbar(error.message, { variant: 'error' })
         }
     }, [data, loading, error])
 
@@ -55,12 +54,10 @@ const Item = () => {
                 open={open}
                 itemId={Number(id)}
                 handleClose={handleCloseModal}
-                handleError={(e) => setErrorMessage({ status: 0, message: e })}
+                handleError={() => navigate('/items')}
                 afterDelete={() => navigate('/items')}
             />
             <Back />
-            {errorMessage && <Error error={errorMessage} />}
-
             {item && (
                 <div>
                     <Card sx={{ marginTop: 2 }}>

@@ -78,7 +78,7 @@ describe('Item', () => {
         )
 
         await waitFor(() => {
-            expect(screen.getByRole('alert')).toHaveTextContent('Error!')
+            expect(screen.getByRole('toast')).toHaveTextContent('Error!')
         })
     })
 })
