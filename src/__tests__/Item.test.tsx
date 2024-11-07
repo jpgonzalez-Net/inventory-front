@@ -6,6 +6,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { GET_ITEM } from '../service/queries'
 import { MemoryRouter, useParams } from 'react-router-dom'
 import { GraphQLError } from 'graphql'
+import { SnackbarProvider } from 'notistack'
 
 jest.mock('react-router-dom', () => ({
     ...(jest.requireActual('react-router-dom') as {}),
@@ -13,6 +14,17 @@ jest.mock('react-router-dom', () => ({
     Link: () => <></>,
     useParams: jest.fn(),
 }))
+
+// const mockEnqueue = jest.fn()
+
+// jest.mock('notistack', () => ({
+//     ...jest.requireActual('notistack'),
+//     useSnackbar: () => {
+//         return {
+//             enqueueSnackbar: mockEnqueue,
+//         }
+//     },
+// }))
 
 const mockItem: ItemType = {
     itemId: 1001,
@@ -72,13 +84,13 @@ describe('Item', () => {
     it("renders error message correctly if Item doesn't exist", async () => {
         ;(useParams as jest.Mock).mockReturnValue({ id: '1002' })
         render(
-            <MockedProvider mocks={mocks} addTypename={false}>
-                <Item />
-            </MockedProvider>
+            <SnackbarProvider maxSnack={5}>
+                <MockedProvider mocks={mocks} addTypename={false}>
+                    <Item />
+                </MockedProvider>
+            </SnackbarProvider>
         )
 
-        await waitFor(() => {
-            expect(screen.getByRole('toast')).toHaveTextContent('Error!')
-        })
+        expect(await screen.findByText('Error!')).toBeInTheDocument()
     })
 })

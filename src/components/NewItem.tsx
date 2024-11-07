@@ -80,6 +80,8 @@ const NewItem = () => {
             enqueueSnackbar('Item ID and Name are required', {
                 variant: 'error',
             })
+            setIdError(true)
+            setNameError(true)
         } else if (!itemId || itemId <= 0) {
             enqueueSnackbar('Item ID is required', { variant: 'error' })
             setIdError(true)

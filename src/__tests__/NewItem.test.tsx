@@ -7,6 +7,7 @@ import { GET_ALL_LOCATIONS } from '../service/queries'
 import { MockedProvider } from '@apollo/client/testing'
 import { CREATE_ITEM } from '../service/mutations'
 import { GraphQLError } from 'graphql'
+import { SnackbarProvider } from 'notistack'
 
 jest.mock('react-router-dom', () => ({
     ...(jest.requireActual('react-router-dom') as {}),
@@ -132,9 +133,11 @@ describe('NewItem', () => {
     test('It renders Error alert correctly if ID already exists in database', async () => {
         // render NewItem
         render(
-            <MockedProvider mocks={mocks} addTypename={false}>
-                <NewItem />
-            </MockedProvider>
+            <SnackbarProvider>
+                <MockedProvider mocks={mocks} addTypename={false}>
+                    <NewItem />
+                </MockedProvider>
+            </SnackbarProvider>
         )
 
         //  get required fields
@@ -158,7 +161,7 @@ describe('NewItem', () => {
         // after all the events finish
         await waitFor(() => {
             // we expect to see the error message
-            expect(screen.getByRole('alert')).toHaveTextContent('Error!')
+            expect(screen.getByText('Error!')).toBeInTheDocument()
         })
 
         // we expect NOT to see the modal message
@@ -170,9 +173,11 @@ describe('NewItem', () => {
     test('It renders the Error alert if ID or Name is not entered', async () => {
         // render NewItem
         render(
-            <MockedProvider mocks={mocks} addTypename={false}>
-                <NewItem />
-            </MockedProvider>
+            <SnackbarProvider>
+                <MockedProvider mocks={mocks} addTypename={false}>
+                    <NewItem />
+                </MockedProvider>
+            </SnackbarProvider>
         )
 
         // click submit button
