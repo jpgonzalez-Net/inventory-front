@@ -55,6 +55,17 @@ const Items = () => {
         }
     }, [loading, error, data])
 
+    useEffect(() => {
+        // Go to previous page if there are no items in current page (after deleting them)
+        if (
+            page > 1 &&
+            items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .length === 0
+        ) {
+            setPage(page - 1)
+        }
+    }, [items, page, rowsPerPage])
+
     const handleFilter = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
