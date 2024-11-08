@@ -55,6 +55,7 @@ const DeleteItem = ({
                     <h4>Are you sure?</h4>
                     <div className="modal-buttons">
                         <Button
+                            disabled={loading}
                             variant="outlined"
                             color="success"
                             onClick={handleDelete}

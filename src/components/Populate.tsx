@@ -1,6 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import ItemType from '../assets/ItemType'
-import LocationType from '../assets/LocationType'
 import { useEffect } from 'react'
 import { useMutation } from '@apollo/client'
 import { CREATE_ITEM, CREATE_LOCATION } from '../service/mutations'
@@ -12,7 +10,6 @@ import locations from '../assets/locations'
 
 const Populate = () => {
     const navigate = useNavigate()
-    const { enqueueSnackbar } = useSnackbar()
 
     const [createLocation] = useMutation(CREATE_LOCATION, {
         refetchQueries: [GET_ALL_LOCATIONS],
@@ -33,25 +30,15 @@ const Populate = () => {
                             },
                         })
                             .then(() => {
-                                enqueueSnackbar(
-                                    'Database populated correctly!',
-                                    { variant: 'success' }
-                                )
                                 navigate('/items')
                             })
                             .catch((e) => {
-                                enqueueSnackbar('An error ocurred', {
-                                    variant: 'error',
-                                })
                                 navigate('/items')
                                 console.error(e.message)
                             })
                     })
                 })
                 .catch((e) => {
-                    enqueueSnackbar('An error ocurred', {
-                        variant: 'error',
-                    })
                     navigate('/items')
                     console.error(e.message)
                 })
